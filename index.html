@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SmartFinds — Curated Amazon Picks</title>
+  <meta name="description" content="A clean, fast affiliate storefront showcasing curated Amazon picks across tech, home, fitness and books." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <!-- Legal disclosure ribbon -->
+  <div class="disclosure" role="note" aria-label="Affiliate disclosure">
+    As an Amazon Associate, I earn from qualifying purchases.
+  </div>
+
+  <header class="site-header">
+    <a class="brand" href="#" aria-label="SmartFinds Home">
+      <img src="assets/logo.svg" alt="" class="brand-logo" width="28" height="28" />
+      <span class="brand-name">SmartFinds <span class="brand-dot"></span></span>
+    </a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu">☰</button>
+      <ul id="nav-menu" class="nav-menu">
+        <li><a href="#tech" data-filter="tech" class="nav-link is-active">Tech &amp; Gadgets</a></li>
+        <li><a href="#home" data-filter="home" class="nav-link">Home Essentials</a></li>
+        <li><a href="#fitness" data-filter="fitness" class="nav-link">Fitness &amp; Wellness</a></li>
+        <li><a href="#books" data-filter="books" class="nav-link">Books &amp; Learning</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" role="banner">
+      <div class="hero-inner">
+        <h1>Curated Amazon Finds</h1>
+        <p>Hand‑picked products that actually make life easier. No clutter, just the good stuff.</p>
+        <form class="search" role="search" aria-label="Product search">
+          <input type="search" id="searchInput" placeholder="Search products…" aria-label="Search products">
+          <button type="button" id="searchBtn" class="btn">Search</button>
+          <button type="button" id="clearBtn" class="btn btn-ghost">Clear</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="grid-section">
+      <h2 class="visually-hidden">Product grid</h2>
+      <div id="productGrid" class="grid" aria-live="polite"></div>
+      <template id="productCardTpl">
+        <article class="card" data-category="">
+          <a class="card-image-link" target="_blank" rel="noopener nofollow sponsored" aria-label="Open product on Amazon">
+            <img class="card-image" loading="lazy" alt="">
+          </a>
+          <div class="card-body">
+            <span class="card-category"></span>
+            <h3 class="card-title"></h3>
+            <p class="card-desc"></p>
+            <div class="card-meta">
+              <span class="price" aria-label="Approximate price"></span>
+              <span class="rating" aria-label="Average rating"></span>
+            </div>
+            <div class="card-actions">
+              <a class="btn btn-primary buy-btn" target="_blank" rel="noopener nofollow sponsored">Buy on Amazon</a>
+            </div>
+          </div>
+        </article>
+      </template>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-grid">
+      <div>
+        <h4>About</h4>
+        <p>SmartFinds is a curated storefront featuring practical product picks. We test, read reviews, and shortlist what’s worth your time.</p>
+      </div>
+      <div>
+        <h4>Categories</h4>
+        <ul class="footer-list">
+          <li><a href="#tech" data-filter="tech" class="footer-link">Tech &amp; Gadgets</a></li>
+          <li><a href="#home" data-filter="home" class="footer-link">Home Essentials</a></li>
+          <li><a href="#fitness" data-filter="fitness" class="footer-link">Fitness &amp; Wellness</a></li>
+          <li><a href="#books" data-filter="books" class="footer-link">Books &amp; Learning</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Disclosure</h4>
+        <p>As an Amazon Associate, I earn from qualifying purchases. Product information and prices are subject to change.</p>
+      </div>
+    </div>
+    <p class="copyright">© <span id="year"></span> SmartFinds. All rights reserved.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
