@@ -56,6 +56,32 @@ const BOOKS = [
 ];
 
 
+// === TECH & GADGETS COLLECTION ===
+const TECH = [
+  {
+    id: 't1',
+    asin: 'B0C6P6C8F6', // Echo Pop
+    title: 'Echo Pop | Compact Smart Speaker with Alexa',
+    desc: 'Smart speaker with Alexa — perfect for music, news, and home control. Compact size, great sound.',
+    img: 'https://m.media-amazon.com/images/I/61E4JBlOfzL._AC_SL1000_.jpg',
+    url: 'https://amzn.to/4qHcDRg',
+    category: 'tech',
+    rating: '4.7/5'
+  },
+  {
+    id: 't2',
+    asin: 'B0BFCWC9X7', // Fire TV Stick 4K
+    title: 'Fire TV Stick 4K with Alexa Voice Remote',
+    desc: 'Stream in brilliant 4K UHD and control your TV hands-free with Alexa. Fast, reliable and powerful.',
+    img: 'https://m.media-amazon.com/images/I/51uY+-pzJ-L._AC_SL1000_.jpg',
+    url: 'https://amzn.to/47Fuwbn',
+    category: 'tech',
+    rating: '4.8/5'
+  },
+];
+
+
+
 const PRODUCTS = [
   {
     id: 'p1',
@@ -116,7 +142,7 @@ const PRODUCTS = [
     category: 'books',
     img: 'assets/demo-deepwork.jpg',
     url: 'https://amzn.to/4o3ktCU'
-  },...BOOKS
+  },...BOOKS,...TECH
 ];
 
 
