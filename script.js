@@ -80,6 +80,19 @@ const TECH = [
   },
 ];
 
+const FITNESS = [
+  {
+  id: 's1',
+  asin: 'B00QWUZJ5I',
+  title: 'Wilson Staff Squash Balls – Pack of 2 (Blue)',
+  desc: 'High-performance squash balls for experienced players. Designed for speed and durability on court.',
+  img: 'https://m.media-amazon.com/images/I/819m845i7OL._AC_SL1500_.jpg',  // verifique se essa URL funciona; ajuste se necessário
+  url: 'https://amzn.to/4o4CmBb',
+  category: 'fitness',  // ou 'fitness' se já tiver essa categoria
+  rating: '4.5/5'
+},
+]
+
 
 
 const PRODUCTS = [
@@ -142,7 +155,7 @@ const PRODUCTS = [
     category: 'books',
     img: 'assets/demo-deepwork.jpg',
     url: 'https://amzn.to/4o3ktCU'
-  },...BOOKS,...TECH
+  }, ...BOOKS, ...TECH,...FITNESS
 ];
 
 
@@ -156,7 +169,7 @@ const clearBtn = document.getElementById('clearBtn');
 const yearEl = document.getElementById('year');
 yearEl.textContent = new Date().getFullYear();
 
-function createCard(p){
+function createCard(p) {
   const node = tpl.content.firstElementChild.cloneNode(true);
   node.dataset.category = p.category;
   node.querySelector('.card-image').src = p.img;
@@ -171,7 +184,7 @@ function createCard(p){
   return node;
 }
 
-function categoryLabel(key){
+function categoryLabel(key) {
   return {
     tech: 'Tech & Gadgets',
     home: 'Home Essentials',
@@ -180,25 +193,25 @@ function categoryLabel(key){
   }[key] || key;
 }
 
-function render(products){
+function render(products) {
   grid.innerHTML = '';
   const frag = document.createDocumentFragment();
   products.forEach(p => frag.appendChild(createCard(p)));
   grid.appendChild(frag);
 }
 
-function filterByCategory(cat){
+function filterByCategory(cat) {
   const filtered = PRODUCTS.filter(p => p.category === cat);
   render(filtered);
 }
 
-function handleNav(){
+function handleNav() {
   document.querySelectorAll('[data-filter]').forEach(el => {
     el.addEventListener('click', (e) => {
       e.preventDefault();
       const cat = el.getAttribute('data-filter');
       document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('is-active'));
-      document.querySelector('.nav-link[data-filter="'+cat+'"]')?.classList.add('is-active');
+      document.querySelector('.nav-link[data-filter="' + cat + '"]')?.classList.add('is-active');
       filterByCategory(cat);
       // Close mobile menu
       document.getElementById('nav-menu').classList.remove('open');
@@ -207,9 +220,9 @@ function handleNav(){
   });
 }
 
-function handleSearch(){
+function handleSearch() {
   const term = searchInput.value.trim().toLowerCase();
-  if(!term){ render(PRODUCTS); return; }
+  if (!term) { render(PRODUCTS); return; }
   const results = PRODUCTS.filter(p =>
     p.title.toLowerCase().includes(term) ||
     p.desc.toLowerCase().includes(term) ||
@@ -218,7 +231,7 @@ function handleSearch(){
   render(results);
 }
 
-function initNavToggle(){
+function initNavToggle() {
   const btn = document.querySelector('.nav-toggle');
   const menu = document.getElementById('nav-menu');
   btn.addEventListener('click', () => {
@@ -235,5 +248,5 @@ initNavToggle();
 
 // Search handlers
 searchBtn.addEventListener('click', handleSearch);
-clearBtn.addEventListener('click', () => { searchInput.value=''; render(PRODUCTS); });
-searchInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ e.preventDefault(); handleSearch(); } });
+clearBtn.addEventListener('click', () => { searchInput.value = ''; render(PRODUCTS); });
+searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); handleSearch(); } });
