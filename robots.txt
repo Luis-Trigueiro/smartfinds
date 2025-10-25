@@ -1,0 +1,14 @@
+# robots.txt for SmartFinds4You.com
+# Last updated: 2025-10-25
+
+User-agent: *
+Allow: /
+
+# Disallow private or unused folders (if you ever create them)
+Disallow: /admin/
+Disallow: /login/
+Disallow: /drafts/
+Disallow: /assets/tmp/
+
+# Sitemap location
+Sitemap: https://www.smartfinds4you.com/sitemap.xml
