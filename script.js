@@ -155,7 +155,7 @@ function initNavToggle(){
 
 // Init
 render(PRODUCTS);           // render all on load
-filterByCategory();   // then default to tech tab
+//filterByCategory('tech');   // then default to tech tab
 handleNav();
 initNavToggle();
 
