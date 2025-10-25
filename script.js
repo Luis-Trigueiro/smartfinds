@@ -1,5 +1,61 @@
 // Data: replace 'tag=smartfinds4yo-21' with your Amazon UK Associate tag.
 // Each product has: id, title, desc, price, rating, category, img, url
+
+// === BOOKS COLLECTION ===
+const BOOKS = [
+  {
+    id: 'b1',
+    asin: 'B09LV4R35M', // Atomic Habits
+    title: 'Atomic Habits',
+    desc: 'Tiny Changes, Remarkable Results — learn how to build better habits and break bad ones in simple, proven ways.',
+    img: 'https://m.media-amazon.com/images/I/81wgcld4wxL._SL1500_.jpg',
+    url: 'https://amzn.to/4qxCT0q',
+    category: 'books',
+    rating: '4.8/5'
+  },
+  {
+    id: 'b2',
+    asin: '1529158069', // The Mountain Is You
+    title: 'The Mountain Is You',
+    desc: 'Transforming self-sabotage into self-mastery. A deep and inspiring read for personal growth and awareness.',
+    img: 'https://m.media-amazon.com/images/I/71AHFDEpkdL._SL1500_.jpg',
+    url: 'https://amzn.to/49k7msk',
+    category: 'books',
+    rating: '4.7/5'
+  },
+  {
+    id: 'b3',
+    asin: '1847941834', // Think Fast and Slow
+    title: 'Thinking, Fast and Slow',
+    desc: 'Nobel Prize winner Daniel Kahneman explains the two systems that drive the way we think and make decisions.',
+    img: 'https://m.media-amazon.com/images/I/71f6DceqZAL._SL1500_.jpg',
+    url: 'https://amzn.to/4qpQMxk',
+    category: 'books',
+    rating: '4.6/5'
+  },
+  {
+    id: 'b4',
+    asin: '1785042270', // The Comfort Book
+    title: 'The Comfort Book',
+    desc: 'A collection of small truths for comfort, healing, and hope. Short, soulful reflections from Matt Haig.',
+    img: 'https://m.media-amazon.com/images/I/71qimTEdDpL._SL1500_.jpg',
+    url: 'https://amzn.to/4hqcjBY',
+    category: 'books',
+    rating: '4.7/5'
+  },
+  {
+    id: 'b5',
+    asin: '1473684331', // 12 Rules for Life
+    title: '12 Rules for Life: An Antidote to Chaos',
+    desc: 'Jordan Peterson combines science, philosophy, and psychology to provide a guide to a meaningful life.',
+    img: 'https://m.media-amazon.com/images/I/71OVB8HknWL._SL1500_.jpg',
+    url: 'https://amzn.to/4nsR4RB',
+    category: 'books',
+    rating: '4.7/5'
+  }
+];
+
+
 const PRODUCTS = [
   {
     id: 'p1',
@@ -52,16 +108,6 @@ const PRODUCTS = [
     url: 'https://amzn.to/4qjsC7G'
   },
   {
-    id: 'p7',
-    title: 'Atomic Habits — James Clear',
-    desc: 'Tiny changes, remarkable results. A modern classic on habit building.',
-    price: '€14.95',
-    rating: '4.8/5',
-    category: 'books',
-    img: 'assets/demo-atomic.jpg',
-    url: 'https://amzn.to/47klOhC'
-  },
-  {
     id: 'p8',
     title: 'Deep Work — Cal Newport',
     desc: 'Rules for focused success in a distracted world.',
@@ -70,8 +116,10 @@ const PRODUCTS = [
     category: 'books',
     img: 'assets/demo-deepwork.jpg',
     url: 'https://amzn.to/4o3ktCU'
-  }
+  },...BOOKS
 ];
+
+
 
 // --- Helpers
 const grid = document.getElementById('productGrid');
