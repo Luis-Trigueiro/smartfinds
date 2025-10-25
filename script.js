@@ -9,7 +9,7 @@ const BOOKS = [
     title: 'Atomic Habits',
     desc: 'Tiny Changes, Remarkable Results — learn how to build better habits and break bad ones in simple, proven ways.',
     img: 'https://m.media-amazon.com/images/I/81wgcld4wxL._SL1500_.jpg',
-    url: 'https://amzn.to/4qxCT0q',
+    url: 'https://amzn.to/4o7w9Ez',
     category: 'books',
     rating: '4.8/5'
   },
@@ -19,7 +19,7 @@ const BOOKS = [
     title: 'The Mountain Is You',
     desc: 'Transforming self-sabotage into self-mastery. A deep and inspiring read for personal growth and awareness.',
     img: 'https://m.media-amazon.com/images/I/71AHFDEpkdL._SL1500_.jpg',
-    url: 'https://amzn.to/49k7msk',
+    url: 'https://amzn.to/4o9oEgH',
     category: 'books',
     rating: '4.7/5'
   },
@@ -29,7 +29,7 @@ const BOOKS = [
     title: 'Thinking, Fast and Slow',
     desc: 'Nobel Prize winner Daniel Kahneman explains the two systems that drive the way we think and make decisions.',
     img: 'https://m.media-amazon.com/images/I/71f6DceqZAL._SL1500_.jpg',
-    url: 'https://amzn.to/4qpQMxk',
+    url: 'https://amzn.to/3J0cRly',
     category: 'books',
     rating: '4.6/5'
   },
@@ -39,7 +39,7 @@ const BOOKS = [
     title: 'The Comfort Book',
     desc: 'A collection of small truths for comfort, healing, and hope. Short, soulful reflections from Matt Haig.',
     img: 'https://m.media-amazon.com/images/I/71qimTEdDpL._SL1500_.jpg',
-    url: 'https://amzn.to/4hqcjBY',
+    url: 'https://amzn.to/4hyszkG',
     category: 'books',
     rating: '4.7/5'
   },
@@ -49,7 +49,7 @@ const BOOKS = [
     title: '12 Rules for Life: An Antidote to Chaos',
     desc: 'Jordan Peterson combines science, philosophy, and psychology to provide a guide to a meaningful life.',
     img: 'https://m.media-amazon.com/images/I/71OVB8HknWL._SL1500_.jpg',
-    url: 'https://amzn.to/4nsR4RB',
+    url: 'https://amzn.to/3WZMT4E',
     category: 'books',
     rating: '4.7/5'
   }
@@ -154,7 +154,7 @@ const PRODUCTS = [
     rating: '4.7/5',
     category: 'books',
     img: 'assets/demo-deepwork.jpg',
-    url: 'https://amzn.to/4o3ktCU'
+    url: 'https://amzn.to/43D0FOp'
   }, ...BOOKS, ...TECH,...FITNESS
 ];
 
