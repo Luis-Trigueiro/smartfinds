@@ -2,96 +2,42 @@ import fs from "fs";
 import path from "path";
 import OpenAI from "openai";
 import { marked } from "marked";
+import "dotenv/config";
 
-let usePAAPI = !!(process.env.AMAZON_ACCESS_KEY && process.env.AMAZON_SECRET_KEY);
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Optional import only if PA-API keys exist
-let searchAmazonProducts = null;
-if (usePAAPI) {
-  const pa = await import("amazon-pa-api50").catch(() => null);
-  if (pa) {
-    const { DefaultApi, SearchItemsRequest } = pa;
-    const api = new DefaultApi({
-      accessKey: process.env.AMAZON_ACCESS_KEY,
-      secretKey: process.env.AMAZON_SECRET_KEY,
-      partnerTag: "smartfinds403-21",
-      region: "EU",
-    });
+// 🧠 Rotação automática de temas
+const topics = [
+  "Books & Learning",
+  "Smart Gadgets and Useful Amazon Finds",
+  "Fitness & Wellness",
+  "Home Essentials"
+];
 
-    searchAmazonProducts = async (keyword) => {
-      try {
-        const req = new SearchItemsRequest();
-        req.Keywords = keyword;
-        req.PartnerTag = "smartfinds403-21";
-        req.PartnerType = "Associates";
-        req.Resources = [
-          "Images.Primary.Medium",
-          "ItemInfo.Title",
-          "Offers.Listings.Price",
-        ];
-        const res = await api.searchItems(req);
-        const items = res.SearchResult?.Items || [];
-        return items.map((i) => ({
-          title: i.ItemInfo?.Title?.DisplayValue,
-          asin: i.ASIN,
-          image: i.Images?.Primary?.Medium?.URL,
-          price: i.Offers?.Listings?.[0]?.Price?.DisplayAmount,
-          link: i.DetailPageURL,
-        }));
-      } catch (err) {
-        console.warn("⚠️ PA-API fallback:", err.message);
-        return [];
-      }
-    };
-  } else {
-    usePAAPI = false;
-  }
+const topicIndexFile = "blog/last-topic.txt";
+let lastIndex = 0;
+
+if (fs.existsSync(topicIndexFile)) {
+  lastIndex = parseInt(fs.readFileSync(topicIndexFile, "utf8"), 10);
+  if (isNaN(lastIndex)) lastIndex = 0;
 }
 
-// ---------- HELPERS FOR AMAZON LINKS ----------
-function randomCode(length = 10) {
-  const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
-}
+const currentIndex = (lastIndex + 1) % topics.length;
+const currentTopic = topics[currentIndex];
 
-function buildSearchUrl(keyword) {
-  const u = new URL("https://www.amazon.ie/s");
-  u.searchParams.set("k", keyword);
-  u.searchParams.set("tag", "smartfinds403-21");
-  u.searchParams.set("linkCode", "ll1");
-  u.searchParams.set("language", "en_IE");
-  u.searchParams.set("ref_", "as_li_ss_tl");
-  return u.toString();
-}
+// Salva o índice atual para a próxima execução
+fs.writeFileSync(topicIndexFile, currentIndex.toString());
 
-function buildRealisticAmazonUrl(asin, name) {
-  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-  const u = new URL(`https://www.amazon.ie/${slug}/dp/${asin}`);
-  u.searchParams.set("pd_rd_w", randomCode(5));
-  u.searchParams.set("content-id", `amzn1.sym.${randomCode(15)}`);
-  u.searchParams.set("pf_rd_p", randomCode(15));
-  u.searchParams.set("pf_rd_r", randomCode(12));
-  u.searchParams.set("pd_rd_i", asin);
-  u.searchParams.set("th", "1");
-  u.searchParams.set("psc", "1");
-  u.searchParams.set("linkCode", "ll1");
-  u.searchParams.set("tag", "smartfinds403-21");
-  u.searchParams.set("linkId", randomCode(16));
-  u.searchParams.set("language", "en_IE");
-  u.searchParams.set("ref_", "as_li_ss_tl");
-  return u.toString();
-}
 
 async function generatePost() {
-  console.log("🧠 Generating SmartFinds4You post...");
+  console.log("🧠 Generating SmartFinds4You post with thumbnail and SEO...");
 
   const today = new Date();
   const dateStr = today.toISOString().split("T")[0];
-  const titleSlug = "smart-gadgets-daily-picks";
+  const titleSlug = currentTopic.toLowerCase().replace(/[^a-z0-9]+/g, "-");
   const mdFileName = `${dateStr}-${titleSlug}.md`;
   const htmlFileName = `${dateStr}-${titleSlug}.html`;
   const imageFileName = `${dateStr}-thumb.png`;
@@ -101,80 +47,246 @@ async function generatePost() {
   if (!fs.existsSync(postsDir)) fs.mkdirSync(postsDir, { recursive: true });
   if (!fs.existsSync(imgDir)) fs.mkdirSync(imgDir, { recursive: true });
 
-  let products = [];
-
-  if (usePAAPI && searchAmazonProducts) {
-    console.log("🛍️ Fetching products via Amazon PA-API...");
-    products = await searchAmazonProducts("smart gadgets");
-  }
-
-  const productDescriptions = products.length
-    ? products
-        .slice(0, 5)
-        .map(
-          (p, i) =>
-            `### ${i + 1}. ${p.title}\n💰 **${p.price || "Check price on Amazon"}**  \n🛒 [Buy on Amazon.ie](${p.link})`
-        )
-        .join("\n\n")
-    : "";
-
+  // ✨ Prompt atualizado para links realistas e markdown limpo
   const prompt = `
-Write a friendly blog post for "SmartFinds4You", an Amazon affiliate site.
-Topic: "Top Smart Gadgets and Useful Amazon Finds".
-Include 3–5 smart, trending or fun gadgets (use realistic product names if PA-API data is unavailable).
-Each item must include a working Amazon.ie link using this model:
-https://www.amazon.ie/s?k=[keyword]&tag=smartfinds403-21&linkCode=ll1&language=en_IE&ref_=as_li_ss_tl
-Keep it under 400 words, use emojis and Markdown formatting.
-${products.length ? `Include these real products:\n${productDescriptions}` : ""}
+Write a blog post for "SmartFinds4You", an Amazon affiliate site.
+Theme: "${currentTopic}".
+Include 3–5 trending products sold on Amazon.ie that fit this theme, with fun, natural descriptions.
+
+Each product must include a working Amazon.ie search link, formatted like a real Amazon result link.
+The link must follow this format:
+
+https://www.amazon.ie/s?k=[product+keywords]&tag=smartfinds403-21&language=en_IE&linkCode=ll1&ref_=as_li_ss_tl
+
+Examples:
+- https://www.amazon.ie/s?k=echo+dot+5th+gen&tag=smartfinds403-21&language=en_IE&linkCode=ll1&ref_=as_li_ss_tl
+- https://www.amazon.ie/s?k=ring+video+doorbell&tag=smartfinds403-21&language=en_IE&linkCode=ll1&ref_=as_li_ss_tl
+
+The links must look clean, contain real product names, and always include your affiliate tag:
+tag=smartfinds403-21&language=en_IE&linkCode=ll1&ref_=as_li_ss_tl
+
+Format in Markdown with headings, emojis, and short engaging paragraphs.
+Keep it under 400 words and include a short friendly intro related to "${currentTopic}".
+Make sure the products come from different subcategories (e.g., books, tech, fitness, home essentials).
+Avoid repeating similar items or brands.
 `;
 
+
+  // 💬 Generate content
   const completion = await client.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [{ role: "user", content: prompt }],
   });
 
-  const markdown = completion.choices[0].message.content;
+  const markdownContent = completion.choices[0].message.content;
 
-  const title = markdown.match(/^#\s*(.*)/m)?.[1] || "SmartFinds Daily Picks";
+  // 🎯 Extract title and description for SEO
+  const titleMatch = markdownContent.match(/^#\s*(.*)/m);
+  const title = titleMatch ? titleMatch[1].trim() : "SmartFinds Daily Picks";
   const description =
-    markdown.replace(/[#*_>\[\]()]/g, "").split("\n").slice(1, 3).join(" ").slice(0, 150) + "...";
+    markdownContent
+      .replace(/[#*_>\[\]()]/g, "")
+      .split("\n")
+      .slice(1, 4)
+      .join(" ")
+      .slice(0, 150) + "...";
 
-  const html = marked(markdown).replace(
-    /<a href="([^"]+amazon[^"]+)">([^<]+)<\/a>/g,
-    (_m, url, text) => `<a href="${buildSearchUrl(text)}" target="_blank" class="buy-btn">🛒 Buy on Amazon.ie</a>`
+  // 🎨 Try generating a thumbnail (fallback if denied)
+  let imagePath = path.join(imgDir, imageFileName);
+  try {
+    console.log("🎨 Generating thumbnail with gpt-image-1...");
+    const imageResponse = await client.images.generate({
+      model: "gpt-image-1",
+      prompt: `A flat modern banner for "${title}", SmartFinds4You style, blue (#0d3b66) and orange (#f28c28), minimalist tech theme.`,
+      size: "1536x1024",
+    });
+    const base64 = imageResponse.data[0].b64_json;
+    fs.writeFileSync(imagePath, Buffer.from(base64, "base64"));
+    console.log("✅ Custom thumbnail generated.");
+  } catch (err) {
+    console.warn("⚠️ Image generation failed. Using default thumbnail.");
+    const defaultPath = path.join("assets", "default-thumb.png");
+    if (fs.existsSync(defaultPath)) {
+      fs.copyFileSync(defaultPath, imagePath);
+    }
+  }
+
+  // --- Helpers para gerar links Amazon seguros e rastreáveis ---
+  function isAmazon(hostname) {
+    return /(^|\.)amazon\./i.test(hostname);
+  }
+
+  function hasDpAsin(pathname) {
+    const m = pathname.match(/\/dp\/([A-Z0-9]{10})(?:[\/?]|$)/i);
+    return m ? m[1].toUpperCase() : null;
+  }
+
+  // 🔢 Gera strings aleatórias (apenas cosmético)
+  function randomCode(length = 10) {
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+  }
+
+  // 🔍 Cria link de busca seguro na Amazon.ie
+  function buildSearchUrl(keyword) {
+    const u = new URL("https://www.amazon.ie/s");
+    u.searchParams.set("k", keyword);
+    u.searchParams.set("tag", "smartfinds403-21");
+    u.searchParams.set("linkCode", "ll1");
+    u.searchParams.set("language", "en_IE");
+    u.searchParams.set("ref_", "as_li_ss_tl");
+    return u.toString();
+  }
+
+  // 🔗 Cria link completo e estilizado (apenas se o ASIN for real)
+  function buildRealisticAmazonUrl(asin, productName = "product") {
+    const nameSlug = productName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+    const url = new URL(`https://www.amazon.ie/${nameSlug}/dp/${asin}`);
+    url.searchParams.set("pd_rd_w", randomCode(5));
+    url.searchParams.set("content-id", `amzn1.sym.${randomCode(15)}`);
+    url.searchParams.set("pf_rd_p", randomCode(15));
+    url.searchParams.set("pf_rd_r", randomCode(12));
+    url.searchParams.set("pd_rd_i", asin);
+    url.searchParams.set("th", "1");
+    url.searchParams.set("psc", "1");
+    url.searchParams.set("linkCode", "ll1");
+    url.searchParams.set("tag", "smartfinds403-21");
+    url.searchParams.set("linkId", randomCode(16));
+    url.searchParams.set("language", "en_IE");
+    url.searchParams.set("ref_", "as_li_ss_tl");
+
+    return url.toString();
+  }
+
+  // 🧠 Conserta links da IA: converte para busca se ASIN for inventado
+  function fixAmazonUrlOrFallback(rawUrl, anchorText) {
+    try {
+      const u = new URL(rawUrl);
+      if (!isAmazon(u.hostname)) return rawUrl;
+
+      const asin = hasDpAsin(u.pathname);
+      const productName = (anchorText || "").trim() || "smart gadget";
+
+      // ✅ Se o ASIN parece real, mantém o formato Amazon com tag
+      if (asin && /^[A-Z0-9]{10}$/.test(asin)) {
+        return buildRealisticAmazonUrl(asin, productName);
+      }
+
+      // 🔄 Caso contrário, usa o nome do produto pra gerar link de busca
+      return buildSearchUrl(productName);
+    } catch {
+      const keyword = (anchorText || "").trim() || "smart gadget";
+      return buildSearchUrl(keyword);
+    }
+  }
+
+
+
+  const htmlFromMarkdown = marked(markdownContent)
+  // Força qualquer link da Amazon a virar o botão padrão
+  .replace(/<a href="([^"]+amazon[^"]+)">[^<]*<\/a>/gi,
+    `<a href="$1" target="_blank" class="buy-btn">🛒 Buy on Amazon.ie</a>`
   );
-
+  // 🌐 Full HTML template
   const htmlContent = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>${title} | SmartFinds4You</title>
-<meta name="description" content="${description}" />
-<link rel="stylesheet" href="../../styles.css" />
-<style>
-body {
-  font-family:'Inter',sans-serif;background:#0d3b66;color:#f9fafb;padding:2rem;line-height:1.7;max-width:900px;margin:auto;
-}
-h1,h2,h3{color:#f9fafb;}
-.buy-btn{display:inline-block;background:#f9fafb;color:#0d3b66;padding:0.7rem 1.4rem;border-radius:10px;text-decoration:none;font-weight:600;}
-.buy-btn:hover{background:#f28c28;color:#fff;}
-.back{color:#f28c28;text-decoration:none;display:inline-block;margin-bottom:1rem;}
-.back:hover{text-decoration:underline;}
-</style>
-</head>
-<body>
-<a href="../index.html" class="back">← Back to Blog</a>
-${html}
-<footer style="margin-top:2rem;text-align:center;color:#f9fafb80;">© ${new Date().getFullYear()} SmartFinds4You</footer>
-</body>
-</html>`;
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>${title} | SmartFinds4You</title>
+    <meta name="description" content="${description}" />
+    <meta property="og:title" content="${title}" />
+    <meta property="og:description" content="${description}" />
+    <meta property="og:image" content="./images/${imageFileName}" />
+    <link rel="stylesheet" href="../../styles.css" />
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background: #0d3b66;
+        color: #f9fafb;
+        padding: 2rem;
+        line-height: 1.7;
+        max-width: 900px;
+        margin: auto;
+      }
+      h1, h2, h3 { color: #f28c28; }
+      img.thumb {
+        display: block;
+        margin: 0 auto 2rem;
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        max-width: 100%;
+      }
+      .buy-btn {
+        display: inline-block;
+        background: #f9fafb;
+        color: #0d3b66;
+        padding: 0.7rem 1.4rem;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.3s ease;
+      }
+      .buy-btn:hover {
+        background: #f28c28;
+        color: #fff;
+      }
+      .back {
+        display: inline-block;
+        margin-bottom: 1rem;
+        color: #f9fafb;
+        text-decoration: none;
+      }
+      .back:hover { text-decoration: underline; }
+      footer {
+        margin-top: 3rem;
+        text-align: center;
+        color: #f9fafb;
+        opacity: 0.8;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <a href="../index.html" class="back">← Back to Blog</a>
+      <img src="./images/${imageFileName}" alt="${title}" class="thumb" />
+      ${htmlFromMarkdown}
+    </main>
+    <footer>© <span id="year"></span> SmartFinds4You. All rights reserved.</footer>
+    <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+  </body>
+  </html>
+  `;
 
-  fs.writeFileSync(path.join(postsDir, mdFileName), markdown);
+  // 💾 Save files
+  fs.writeFileSync(path.join(postsDir, mdFileName), markdownContent);
   fs.writeFileSync(path.join(postsDir, htmlFileName), htmlContent);
+  console.log(`✅ Post generated: ${htmlFileName}`);
 
-  console.log("✅ Blog post generated successfully:", htmlFileName);
+  // 📰 Update blog index
+  const blogIndexPath = "blog/index.html";
+  if (fs.existsSync(blogIndexPath)) {
+    const snippet = `
+      <article class="post-card">
+        <h3>${title}</h3>
+        <p>${description}</p>
+        <a href="./posts/${htmlFileName}" class="btn">Read More</a>
+      </article>
+    `;
+    let indexHTML = fs.readFileSync(blogIndexPath, "utf8");
+    if (indexHTML.includes("</main>")) {
+      indexHTML = indexHTML.replace("</main>", `${snippet}\n</main>`);
+      fs.writeFileSync(blogIndexPath, indexHTML);
+      console.log("📰 Blog index updated with new post.");
+    }
+  }
+
+  console.log("✨ Done! Post + SEO + Amazon link validation ready.");
 }
 
 generatePost().catch((err) => {
