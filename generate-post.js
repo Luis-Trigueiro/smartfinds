@@ -77,7 +77,7 @@ async function generatePost() {
     }
   }
 
-// --- Helpers para gerar links Amazon realistas e rastreáveis ---
+// --- Helpers para gerar links Amazon seguros e rastreáveis ---
 function isAmazon(hostname) {
   return /(^|\.)amazon\./i.test(hostname);
 }
@@ -87,13 +87,24 @@ function hasDpAsin(pathname) {
   return m ? m[1].toUpperCase() : null;
 }
 
-// 🔢 Gerador de strings aleatórias para simular parâmetros Amazon
+// 🔢 Gera strings aleatórias (apenas cosmético)
 function randomCode(length = 10) {
   const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
 }
 
-// 🔗 Cria link completo, estilizado como os da Amazon
+// 🔍 Cria link de busca seguro na Amazon.ie
+function buildSearchUrl(keyword) {
+  const u = new URL("https://www.amazon.ie/s");
+  u.searchParams.set("k", keyword);
+  u.searchParams.set("tag", "smartfinds403-21");
+  u.searchParams.set("linkCode", "ll1");
+  u.searchParams.set("language", "en_IE");
+  u.searchParams.set("ref_", "as_li_ss_tl");
+  return u.toString();
+}
+
+// 🔗 Cria link completo e estilizado (apenas se o ASIN for real)
 function buildRealisticAmazonUrl(asin, productName = "product") {
   const nameSlug = productName
     .toLowerCase()
@@ -117,31 +128,28 @@ function buildRealisticAmazonUrl(asin, productName = "product") {
   return url.toString();
 }
 
-function buildSearchUrl(keyword) {
-  const u = new URL("https://www.amazon.ie/s");
-  u.searchParams.set("k", keyword);
-  u.searchParams.set("tag", "smartfinds403-21");
-  u.searchParams.set("linkCode", "ll1");
-  u.searchParams.set("language", "en_IE");
-  u.searchParams.set("ref_", "as_li_ss_tl");
-  return u.toString();
-}
-
+// 🧠 Conserta links da IA: converte para busca se ASIN for inventado
 function fixAmazonUrlOrFallback(rawUrl, anchorText) {
   try {
     const u = new URL(rawUrl);
     if (!isAmazon(u.hostname)) return rawUrl;
+
     const asin = hasDpAsin(u.pathname);
-    if (asin) {
-      return buildRealisticAmazonUrl(asin, anchorText || "smart gadget");
+    const productName = (anchorText || "").trim() || "smart gadget";
+
+    // ✅ Se o ASIN parece real, mantém o formato Amazon com tag
+    if (asin && /^[A-Z0-9]{10}$/.test(asin)) {
+      return buildRealisticAmazonUrl(asin, productName);
     }
-    const keyword = (anchorText || "").trim() || "smart gadget";
-    return buildSearchUrl(keyword);
+
+    // 🔄 Caso contrário, usa o nome do produto pra gerar link de busca
+    return buildSearchUrl(productName);
   } catch {
     const keyword = (anchorText || "").trim() || "smart gadget";
     return buildSearchUrl(keyword);
   }
 }
+
 
 
  const htmlFromMarkdown = marked(markdownContent).replace(
