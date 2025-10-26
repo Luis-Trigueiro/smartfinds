@@ -64,7 +64,7 @@ const TECH = [
     title: 'Echo Pop | Compact Smart Speaker with Alexa',
     desc: 'Smart speaker with Alexa — perfect for music, news, and home control. Compact size, great sound.',
     img: 'https://m.media-amazon.com/images/I/61E4JBlOfzL._AC_SL1000_.jpg',
-    url: 'https://amzn.to/4qHcDRg',
+    url: 'https://amzn.to/4qrWOh1',
     category: 'tech',
     rating: '4.7/5'
   },
@@ -74,7 +74,7 @@ const TECH = [
     title: 'Fire TV Stick 4K with Alexa Voice Remote',
     desc: 'Stream in brilliant 4K UHD and control your TV hands-free with Alexa. Fast, reliable and powerful.',
     img: 'https://m.media-amazon.com/images/I/51uY+-pzJ-L._AC_SL1000_.jpg',
-    url: 'https://amzn.to/47Fuwbn',
+    url: 'https://amzn.to/4o6bxMV',
     category: 'tech',
     rating: '4.8/5'
   },
@@ -100,27 +100,24 @@ const PRODUCTS = [
     id: 'p1',
     title: 'Anker Power Bank (20,000mAh)',
     desc: 'Slim portable charger with fast USB-C input/output — perfect for travel.',
-    price: '£39.99',
     rating: '4.6/5',
     category: 'tech',
     img: 'assets/demo-powerbank.jpg',
-    url: 'https://amzn.to/43o53kj'
+    url: 'https://amzn.to/49nFeVl'
   },
   {
     id: 'p2',
     title: 'Sony WH-CH720N Noise Cancelling Headphones',
     desc: 'Lightweight wireless over-ears with long battery life and great ANC.',
-    price: '€86.00',
     rating: '4.5/5',
     category: 'tech',
     img: 'assets/demo-headphones.jpg',
-    url: 'https://amzn.to/4nnZNEI'
+    url: 'https://amzn.to/47rCkfJ'
   },
   {
     id: 'p3',
     title: 'Shark Cordless Vacuum',
     desc: 'Powerful suction for carpets & hard floors, easy to store.',
-    price: '€177.00',
     rating: '4.4/5',
     category: 'home',
     img: 'assets/demo-vacuum.jpg',
@@ -130,7 +127,6 @@ const PRODUCTS = [
     id: 'p4',
     title: 'Philips Hue Smart Plug',
     desc: 'Smart control for lamps & appliances via app and voice assistants.',
-    price: '€33.02',
     rating: '4.7/5',
     category: 'home',
     img: 'assets/demo-smartplug.jpg',
@@ -140,17 +136,15 @@ const PRODUCTS = [
     id: 'p6',
     title: 'Yoga Mat — Non‑Slip',
     desc: 'Comfortable, durable mat with carrying strap.',
-    price: '€29.48',
     rating: '4.6/5',
     category: 'fitness',
     img: 'assets/demo-yogamat.jpg',
-    url: 'https://amzn.to/4qjsC7G'
+    url: 'https://amzn.to/3J3q2Ch'
   },
   {
     id: 'p8',
     title: 'Deep Work — Cal Newport',
     desc: 'Rules for focused success in a distracted world.',
-    price: '€15.31',
     rating: '4.7/5',
     category: 'books',
     img: 'assets/demo-deepwork.jpg',
