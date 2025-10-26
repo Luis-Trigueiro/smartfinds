@@ -7,6 +7,26 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// ✅ Função para normalizar links da Amazon e injetar sua tag
+function normalizeAmazonLink(rawUrl) {
+  try {
+    const u = new URL(rawUrl);
+
+    // Processa apenas links Amazon
+    if (!/amazon\./i.test(u.hostname)) return rawUrl;
+
+    // Mantém o domínio original (amazon.ie, amazon.co.uk, etc.)
+    u.searchParams.set("tag", "smartfinds403-21");
+    u.searchParams.set("linkCode", "ll1");
+    u.searchParams.set("language", "en_IE");
+    u.searchParams.set("ref_", "as_li_ss_tl");
+
+    return u.toString();
+  } catch {
+    return rawUrl;
+  }
+}
+
 async function generatePost() {
   console.log("🧠 Generating SmartFinds4You post with thumbnail and SEO...");
 
@@ -22,15 +42,16 @@ async function generatePost() {
   if (!fs.existsSync(postsDir)) fs.mkdirSync(postsDir, { recursive: true });
   if (!fs.existsSync(imgDir)) fs.mkdirSync(imgDir, { recursive: true });
 
-  // ✨ Prompt atualizado para links reais e markdown limpo
+  // ✍️ Prompt otimizado — pede URLs completas da Amazon.ie
   const prompt = `
   Write a blog post for "SmartFinds4You", an Amazon affiliate site.
   Theme: "Top Smart Gadgets and Useful Amazon Finds".
-  Include 3–5 real products from Amazon.ie with fun, natural descriptions.
-  Each product must use this link format:
-  https://www.amazon.ie/dp/[ASIN]?crid=2LVFUQENY2V65&keywords=[keyword]&linkCode=ll1&tag=smartfinds403-21&linkId=99c260a4e41515f5f1c89b513de24f16&language=en_IE&ref_=as_li_ss_tl
-  Format the post in Markdown with emojis and clear titles.
-  Keep it under 400 words and include a friendly introduction.
+  Include 3–5 real products from Amazon.ie with short, natural descriptions.
+  For each product, include the **full Amazon.ie URL** exactly as it appears on the product page (not a fabricated ASIN).
+  Do NOT shorten or modify the links.
+  I will add the affiliate parameters automatically.
+  Format the post in Markdown with emojis, product titles, and bullet points.
+  Keep it under 400 words with a friendly introduction.
   `;
 
   const completion = await client.chat.completions.create({
@@ -40,7 +61,7 @@ async function generatePost() {
 
   const markdownContent = completion.choices[0].message.content;
 
-  // 🎯 Extract title and description for SEO
+  // 🎯 Extract title and SEO description
   const titleMatch = markdownContent.match(/^#\s*(.*)/m);
   const title = titleMatch ? titleMatch[1].trim() : "SmartFinds Daily Picks";
   const description =
@@ -51,7 +72,7 @@ async function generatePost() {
       .join(" ")
       .slice(0, 150) + "...";
 
-  // 🎨 Attempt to generate thumbnail image (fallback if denied)
+  // 🎨 Try to generate banner; fallback to default
   let imagePath = path.join(imgDir, imageFileName);
   try {
     console.log("🎨 Generating thumbnail with gpt-image-1...");
@@ -71,13 +92,16 @@ async function generatePost() {
     }
   }
 
-  // 🧱 Convert Markdown to HTML and style Amazon links
+  // 🧱 Convert Markdown → HTML, e estiliza links Amazon automaticamente
   const htmlFromMarkdown = marked(markdownContent).replace(
-    /<a href="([^"]+amazon[^"]+)">([^<]+)<\/a>/g,
-    `<a href="$1" target="_blank" class="buy-btn">🛒 Buy on Amazon.ie</a>`
+    /<a\s+href="([^"]*amazon[^"]*)"[^>]*>(.*?)<\/a>/gi,
+    (m, url, text) => {
+      const fixedUrl = normalizeAmazonLink(url);
+      return `<a href="${fixedUrl}" target="_blank" rel="nofollow sponsored noopener" class="buy-btn">🛒 Buy on Amazon</a>`;
+    }
   );
 
-  // 🌐 Full HTML template
+  // 🌐 HTML final com SEO + estilo consistente com o site
   const htmlContent = `
   <!DOCTYPE html>
   <html lang="en">
@@ -100,7 +124,7 @@ async function generatePost() {
         max-width: 900px;
         margin: auto;
       }
-      h1, h2, h3 { color: #f9fafb; }
+      h1, h2, h3 { color: #0d3b66; }
       img.thumb {
         display: block;
         margin: 0 auto 2rem;
@@ -151,7 +175,6 @@ async function generatePost() {
   if (fs.existsSync(blogIndexPath)) {
     const snippet = `
       <article class="post-card">
-
         <h3>${title}</h3>
         <p>${description}</p>
         <a href="./posts/${htmlFileName}" class="btn">Read More</a>
@@ -165,7 +188,7 @@ async function generatePost() {
     }
   }
 
-  console.log("✨ Done! Post + SEO + Fallback Thumbnail ready.");
+  console.log("✨ Done! Post + SEO + Amazon links fixed successfully.");
 }
 
 generatePost().catch((err) => {
