@@ -32,3 +32,5 @@ jobs:
           git add .
           git commit -m "🧠 New auto blog post: $(date)"
           git push
+
+          
