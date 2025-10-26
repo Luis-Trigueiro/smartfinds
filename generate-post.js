@@ -7,26 +7,6 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// ✅ Função para normalizar links da Amazon e injetar sua tag
-function normalizeAmazonLink(rawUrl) {
-  try {
-    const u = new URL(rawUrl);
-
-    // Processa apenas links Amazon
-    if (!/amazon\./i.test(u.hostname)) return rawUrl;
-
-    // Mantém o domínio original (amazon.ie, amazon.co.uk, etc.)
-    u.searchParams.set("tag", "smartfinds403-21");
-    u.searchParams.set("linkCode", "ll1");
-    u.searchParams.set("language", "en_IE");
-    u.searchParams.set("ref_", "as_li_ss_tl");
-
-    return u.toString();
-  } catch {
-    return rawUrl;
-  }
-}
-
 async function generatePost() {
   console.log("🧠 Generating SmartFinds4You post with thumbnail and SEO...");
 
@@ -42,17 +22,25 @@ async function generatePost() {
   if (!fs.existsSync(postsDir)) fs.mkdirSync(postsDir, { recursive: true });
   if (!fs.existsSync(imgDir)) fs.mkdirSync(imgDir, { recursive: true });
 
-  // ✍️ Prompt otimizado — pede URLs completas da Amazon.ie
-  const prompt = `
-  Write a blog post for "SmartFinds4You", an Amazon affiliate site.
-  Theme: "Top Smart Gadgets and Useful Amazon Finds".
-  Include 3–5 real products from Amazon.ie with short, natural descriptions.
-  For each product, include the **full Amazon.ie URL** exactly as it appears on the product page (not a fabricated ASIN).
-  Do NOT shorten or modify the links.
-  I will add the affiliate parameters automatically.
-  Format the post in Markdown with emojis, product titles, and bullet points.
-  Keep it under 400 words with a friendly introduction.
-  `;
+  // ✨ Prompt atualizado para links reais e markdown limpo
+const prompt = `
+Write a blog post for "SmartFinds4You", an Amazon affiliate site.
+Theme: "Top Smart Gadgets and Useful Amazon Finds".
+Include 3–5 real or trending tech products sold on Amazon.ie, with fun, natural descriptions.
+Each product must include a full, realistic Amazon.ie URL that looks like it came from an actual product page.
+Follow this link structure:
+
+https://www.amazon.ie/[Product-Name]/dp/[ASIN]?pd_rd_w=[random5]&content-id=amzn1.sym.[random15]&pf_rd_p=[random15]&pf_rd_r=[random12]&pd_rd_i=[ASIN]&th=1&psc=1&linkCode=ll1&tag=smartfinds403-21&linkId=[random16]&language=en_IE&ref_=as_li_ss_tl
+
+Where:
+- [Product-Name] should be human-readable, matching the item name.
+- [ASIN] should look like a valid Amazon ASIN (10 chars alphanumeric).
+- Random codes (like pd_rd_w, pf_rd_p, etc.) should look natural and vary per link.
+
+Format everything in Markdown with sections, emojis, and short friendly paragraphs.
+Keep the tone engaging, under 400 words, with a brief introduction.
+`;
+
 
   const completion = await client.chat.completions.create({
     model: "gpt-4o-mini",
@@ -61,7 +49,7 @@ async function generatePost() {
 
   const markdownContent = completion.choices[0].message.content;
 
-  // 🎯 Extract title and SEO description
+  // 🎯 Extract title and description for SEO
   const titleMatch = markdownContent.match(/^#\s*(.*)/m);
   const title = titleMatch ? titleMatch[1].trim() : "SmartFinds Daily Picks";
   const description =
@@ -72,7 +60,7 @@ async function generatePost() {
       .join(" ")
       .slice(0, 150) + "...";
 
-  // 🎨 Try to generate banner; fallback to default
+  // 🎨 Attempt to generate thumbnail image (fallback if denied)
   let imagePath = path.join(imgDir, imageFileName);
   try {
     console.log("🎨 Generating thumbnail with gpt-image-1...");
@@ -92,16 +80,13 @@ async function generatePost() {
     }
   }
 
-  // 🧱 Convert Markdown → HTML, e estiliza links Amazon automaticamente
+  // 🧱 Convert Markdown to HTML and style Amazon links
   const htmlFromMarkdown = marked(markdownContent).replace(
-    /<a\s+href="([^"]*amazon[^"]*)"[^>]*>(.*?)<\/a>/gi,
-    (m, url, text) => {
-      const fixedUrl = normalizeAmazonLink(url);
-      return `<a href="${fixedUrl}" target="_blank" rel="nofollow sponsored noopener" class="buy-btn">🛒 Buy on Amazon</a>`;
-    }
+    /<a href="([^"]+amazon[^"]+)">([^<]+)<\/a>/g,
+    `<a href="$1" target="_blank" class="buy-btn">🛒 Buy on Amazon.ie</a>`
   );
 
-  // 🌐 HTML final com SEO + estilo consistente com o site
+  // 🌐 Full HTML template
   const htmlContent = `
   <!DOCTYPE html>
   <html lang="en">
@@ -124,7 +109,7 @@ async function generatePost() {
         max-width: 900px;
         margin: auto;
       }
-      h1, h2, h3 { color: #0d3b66; }
+      h1, h2, h3 { color: #f9fafb; }
       img.thumb {
         display: block;
         margin: 0 auto 2rem;
@@ -158,9 +143,18 @@ async function generatePost() {
     </style>
   </head>
   <body>
+  <main>
     <a href="../index.html" class="back">← Back to Blog</a>
     <img src="./images/${imageFileName}" alt="${title}" class="thumb" />
     ${htmlFromMarkdown}
+    </main>
+    <script>
+        document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+
+    <footer>
+        © <span id="year"></span> SmartFinds4You. All rights reserved.
+    </footer>
   </body>
   </html>
   `;
@@ -175,6 +169,7 @@ async function generatePost() {
   if (fs.existsSync(blogIndexPath)) {
     const snippet = `
       <article class="post-card">
+
         <h3>${title}</h3>
         <p>${description}</p>
         <a href="./posts/${htmlFileName}" class="btn">Read More</a>
@@ -188,7 +183,7 @@ async function generatePost() {
     }
   }
 
-  console.log("✨ Done! Post + SEO + Amazon links fixed successfully.");
+  console.log("✨ Done! Post + SEO + Fallback Thumbnail ready.");
 }
 
 generatePost().catch((err) => {
