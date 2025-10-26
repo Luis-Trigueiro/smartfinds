@@ -77,56 +77,71 @@ async function generatePost() {
     }
   }
 
-  // --- Helpers para consertar ou gerar fallback de links Amazon ---
-  function isAmazon(hostname) {
-    return /(^|\.)amazon\./i.test(hostname);
-  }
-  function hasDpAsin(pathname) {
-    const m = pathname.match(/\/dp\/([A-Z0-9]{10})(?:[\/?]|$)/i);
-    return m ? m[1].toUpperCase() : null;
-  }
-  function withAffiliateParams(u) {
-    u.searchParams.set("tag", "smartfinds403-21");
-    u.searchParams.set("linkCode", "ll1");
-    u.searchParams.set("language", "en_IE");
-    u.searchParams.set("ref_", "as_li_ss_tl");
-    return u;
-  }
-  function buildSearchUrl(keyword) {
-    const u = new URL("https://www.amazon.ie/s");
-    u.searchParams.set("k", keyword);
-    u.searchParams.set("tag", "smartfinds403-21");
-    u.searchParams.set("linkCode", "ll1");
-    u.searchParams.set("language", "en_IE");
-    u.searchParams.set("ref_", "as_li_ss_tl");
-    return u.toString();
-  }
-  function fixAmazonUrlOrFallback(rawUrl, anchorText) {
-    try {
-      const u = new URL(rawUrl);
-      if (!isAmazon(u.hostname)) return rawUrl;
-      const asin = hasDpAsin(u.pathname);
-      if (asin) {
-        const canonical = new URL(`https://www.amazon.ie/dp/${asin}`);
-        return withAffiliateParams(canonical).toString();
-      }
-      const keyword = (anchorText || "").trim() || "smart gadget";
-      return buildSearchUrl(keyword);
-    } catch {
-      const keyword = (anchorText || "").trim() || "smart gadget";
-      return buildSearchUrl(keyword);
-    }
-  }
+// --- Helpers para gerar links Amazon realistas e rastreáveis ---
+function isAmazon(hostname) {
+  return /(^|\.)amazon\./i.test(hostname);
+}
 
-  // 🧱 Convert Markdown to HTML and sanitize Amazon links
-  const htmlFromMarkdown = marked(markdownContent).replace(
-    /<a\s+href="([^"]*amazon[^"]*)"[^>]*>(.*?)<\/a>/gi,
-    (_m, url, text) => {
-      const fixed = fixAmazonUrlOrFallback(url, text);
-      return `<a href="${fixed}" target="_blank" rel="nofollow sponsored noopener" class="buy-btn">🛒 Buy on Amazon</a>`;
-    }
-  );
+function hasDpAsin(pathname) {
+  const m = pathname.match(/\/dp\/([A-Z0-9]{10})(?:[\/?]|$)/i);
+  return m ? m[1].toUpperCase() : null;
+}
 
+// 🔢 Gerador de strings aleatórias para simular parâmetros Amazon
+function randomCode(length = 10) {
+  const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+}
+
+// 🔗 Cria link completo, estilizado como os da Amazon
+function buildRealisticAmazonUrl(asin, productName = "product") {
+  const nameSlug = productName
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  const url = new URL(`https://www.amazon.ie/${nameSlug}/dp/${asin}`);
+  url.searchParams.set("pd_rd_w", randomCode(5));
+  url.searchParams.set("content-id", `amzn1.sym.${randomCode(15)}`);
+  url.searchParams.set("pf_rd_p", randomCode(15));
+  url.searchParams.set("pf_rd_r", randomCode(12));
+  url.searchParams.set("pd_rd_i", asin);
+  url.searchParams.set("th", "1");
+  url.searchParams.set("psc", "1");
+  url.searchParams.set("linkCode", "ll1");
+  url.searchParams.set("tag", "smartfinds403-21");
+  url.searchParams.set("linkId", randomCode(16));
+  url.searchParams.set("language", "en_IE");
+  url.searchParams.set("ref_", "as_li_ss_tl");
+
+  return url.toString();
+}
+
+function buildSearchUrl(keyword) {
+  const u = new URL("https://www.amazon.ie/s");
+  u.searchParams.set("k", keyword);
+  u.searchParams.set("tag", "smartfinds403-21");
+  u.searchParams.set("linkCode", "ll1");
+  u.searchParams.set("language", "en_IE");
+  u.searchParams.set("ref_", "as_li_ss_tl");
+  return u.toString();
+}
+
+function fixAmazonUrlOrFallback(rawUrl, anchorText) {
+  try {
+    const u = new URL(rawUrl);
+    if (!isAmazon(u.hostname)) return rawUrl;
+    const asin = hasDpAsin(u.pathname);
+    if (asin) {
+      return buildRealisticAmazonUrl(asin, anchorText || "smart gadget");
+    }
+    const keyword = (anchorText || "").trim() || "smart gadget";
+    return buildSearchUrl(keyword);
+  } catch {
+    const keyword = (anchorText || "").trim() || "smart gadget";
+    return buildSearchUrl(keyword);
+  }
+}
   // 🌐 Full HTML template
   const htmlContent = `
   <!DOCTYPE html>
