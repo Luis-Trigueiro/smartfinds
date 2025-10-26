@@ -22,26 +22,23 @@ async function generatePost() {
   if (!fs.existsSync(postsDir)) fs.mkdirSync(postsDir, { recursive: true });
   if (!fs.existsSync(imgDir)) fs.mkdirSync(imgDir, { recursive: true });
 
-  // ✨ Prompt atualizado para links reais e markdown limpo
-const prompt = `
-Write a blog post for "SmartFinds4You", an Amazon affiliate site.
-Theme: "Top Smart Gadgets and Useful Amazon Finds".
-Include 3–5 real or trending tech products sold on Amazon.ie, with fun, natural descriptions.
-Each product must include a full, realistic Amazon.ie URL that looks like it came from an actual product page.
-Follow this link structure:
+  // ✨ Prompt atualizado para links realistas e markdown limpo
+  const prompt = `
+  Write a blog post for "SmartFinds4You", an Amazon affiliate site.
+  Theme: "Top Smart Gadgets and Useful Amazon Finds".
+  Include 3–5 trending tech or home gadgets sold on Amazon.ie, with fun, natural descriptions.
+  Each product must include a realistic Amazon.ie URL that looks like an actual product page.
+  All URLs must contain this affiliate tag at the end: tag=smartfinds403-21&language=en_IE&linkCode=ll1&ref_=as_li_ss_tl
 
-https://www.amazon.ie/[Product-Name]/dp/[ASIN]?pd_rd_w=[random5]&content-id=amzn1.sym.[random15]&pf_rd_p=[random15]&pf_rd_r=[random12]&pd_rd_i=[ASIN]&th=1&psc=1&linkCode=ll1&tag=smartfinds403-21&linkId=[random16]&language=en_IE&ref_=as_li_ss_tl
+  Example valid formats:
+  - https://www.amazon.ie/dp/B0D69NHWPG?tag=smartfinds403-21&language=en_IE&linkCode=ll1&ref_=as_li_ss_tl
+  - https://www.amazon.ie/GRIFEMA-GB1054B-Adjustable/dp/B0D69NHWPG?tag=smartfinds403-21&language=en_IE&linkCode=ll1&ref_=as_li_ss_tl
 
-Where:
-- [Product-Name] should be human-readable, matching the item name.
-- [ASIN] should look like a valid Amazon ASIN (10 chars alphanumeric).
-- Random codes (like pd_rd_w, pf_rd_p, etc.) should look natural and vary per link.
+  Format in Markdown with headings, emojis, and short engaging paragraphs.
+  Keep it under 400 words and include a short friendly intro.
+  `;
 
-Format everything in Markdown with sections, emojis, and short friendly paragraphs.
-Keep the tone engaging, under 400 words, with a brief introduction.
-`;
-
-
+  // 💬 Generate content
   const completion = await client.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [{ role: "user", content: prompt }],
@@ -60,7 +57,7 @@ Keep the tone engaging, under 400 words, with a brief introduction.
       .join(" ")
       .slice(0, 150) + "...";
 
-  // 🎨 Attempt to generate thumbnail image (fallback if denied)
+  // 🎨 Try generating a thumbnail (fallback if denied)
   let imagePath = path.join(imgDir, imageFileName);
   try {
     console.log("🎨 Generating thumbnail with gpt-image-1...");
@@ -80,10 +77,54 @@ Keep the tone engaging, under 400 words, with a brief introduction.
     }
   }
 
-  // 🧱 Convert Markdown to HTML and style Amazon links
+  // --- Helpers para consertar ou gerar fallback de links Amazon ---
+  function isAmazon(hostname) {
+    return /(^|\.)amazon\./i.test(hostname);
+  }
+  function hasDpAsin(pathname) {
+    const m = pathname.match(/\/dp\/([A-Z0-9]{10})(?:[\/?]|$)/i);
+    return m ? m[1].toUpperCase() : null;
+  }
+  function withAffiliateParams(u) {
+    u.searchParams.set("tag", "smartfinds403-21");
+    u.searchParams.set("linkCode", "ll1");
+    u.searchParams.set("language", "en_IE");
+    u.searchParams.set("ref_", "as_li_ss_tl");
+    return u;
+  }
+  function buildSearchUrl(keyword) {
+    const u = new URL("https://www.amazon.ie/s");
+    u.searchParams.set("k", keyword);
+    u.searchParams.set("tag", "smartfinds403-21");
+    u.searchParams.set("linkCode", "ll1");
+    u.searchParams.set("language", "en_IE");
+    u.searchParams.set("ref_", "as_li_ss_tl");
+    return u.toString();
+  }
+  function fixAmazonUrlOrFallback(rawUrl, anchorText) {
+    try {
+      const u = new URL(rawUrl);
+      if (!isAmazon(u.hostname)) return rawUrl;
+      const asin = hasDpAsin(u.pathname);
+      if (asin) {
+        const canonical = new URL(`https://www.amazon.ie/dp/${asin}`);
+        return withAffiliateParams(canonical).toString();
+      }
+      const keyword = (anchorText || "").trim() || "smart gadget";
+      return buildSearchUrl(keyword);
+    } catch {
+      const keyword = (anchorText || "").trim() || "smart gadget";
+      return buildSearchUrl(keyword);
+    }
+  }
+
+  // 🧱 Convert Markdown to HTML and sanitize Amazon links
   const htmlFromMarkdown = marked(markdownContent).replace(
-    /<a href="([^"]+amazon[^"]+)">([^<]+)<\/a>/g,
-    `<a href="$1" target="_blank" class="buy-btn">🛒 Buy on Amazon.ie</a>`
+    /<a\s+href="([^"]*amazon[^"]*)"[^>]*>(.*?)<\/a>/gi,
+    (_m, url, text) => {
+      const fixed = fixAmazonUrlOrFallback(url, text);
+      return `<a href="${fixed}" target="_blank" rel="nofollow sponsored noopener" class="buy-btn">🛒 Buy on Amazon</a>`;
+    }
   );
 
   // 🌐 Full HTML template
@@ -109,7 +150,7 @@ Keep the tone engaging, under 400 words, with a brief introduction.
         max-width: 900px;
         margin: auto;
       }
-      h1, h2, h3 { color: #f9fafb; }
+      h1, h2, h3 { color: #f28c28; }
       img.thumb {
         display: block;
         margin: 0 auto 2rem;
@@ -128,8 +169,8 @@ Keep the tone engaging, under 400 words, with a brief introduction.
         transition: 0.3s ease;
       }
       .buy-btn:hover {
-        background: #f9fafb;
-        color: #0d3b66;
+        background: #f28c28;
+        color: #fff;
       }
       .back {
         display: inline-block;
@@ -138,23 +179,22 @@ Keep the tone engaging, under 400 words, with a brief introduction.
         text-decoration: none;
       }
       .back:hover { text-decoration: underline; }
-      a { color: #f9fafb; text-decoration: none; }
-      a:hover { text-decoration: underline; }
+      footer {
+        margin-top: 3rem;
+        text-align: center;
+        color: #f9fafb;
+        opacity: 0.8;
+      }
     </style>
   </head>
   <body>
-  <main>
-    <a href="../index.html" class="back">← Back to Blog</a>
-    <img src="./images/${imageFileName}" alt="${title}" class="thumb" />
-    ${htmlFromMarkdown}
+    <main>
+      <a href="../index.html" class="back">← Back to Blog</a>
+      <img src="./images/${imageFileName}" alt="${title}" class="thumb" />
+      ${htmlFromMarkdown}
     </main>
-    <script>
-        document.getElementById("year").textContent = new Date().getFullYear();
-    </script>
-
-    <footer>
-        © <span id="year"></span> SmartFinds4You. All rights reserved.
-    </footer>
+    <footer>© <span id="year"></span> SmartFinds4You. All rights reserved.</footer>
+    <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
   </body>
   </html>
   `;
@@ -164,12 +204,11 @@ Keep the tone engaging, under 400 words, with a brief introduction.
   fs.writeFileSync(path.join(postsDir, htmlFileName), htmlContent);
   console.log(`✅ Post generated: ${htmlFileName}`);
 
-  // 📰 Add snippet to blog index
+  // 📰 Update blog index
   const blogIndexPath = "blog/index.html";
   if (fs.existsSync(blogIndexPath)) {
     const snippet = `
       <article class="post-card">
-
         <h3>${title}</h3>
         <p>${description}</p>
         <a href="./posts/${htmlFileName}" class="btn">Read More</a>
@@ -183,7 +222,7 @@ Keep the tone engaging, under 400 words, with a brief introduction.
     }
   }
 
-  console.log("✨ Done! Post + SEO + Fallback Thumbnail ready.");
+  console.log("✨ Done! Post + SEO + Amazon link validation ready.");
 }
 
 generatePost().catch((err) => {
