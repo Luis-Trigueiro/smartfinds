@@ -91,6 +91,16 @@ const FITNESS = [
   category: 'fitness',  // ou 'fitness' se já tiver essa categoria
   rating: '4.5/5'
 },
+  {
+  id: 's2',
+  asin: 'B07XJ16ZH3',
+  title: 'Wilson Triniti Tennis Balls – Pack of 3 (Yellow)',
+  desc: 'Premium tennis balls for all court surfaces. Consistent bounce and durability for competitive play.',
+  img: 'https://m.media-amazon.com/images/I/31rJGXPebDL._AC_SL1002_.jpg',  // verifique se essa URL funciona; ajuste se necessário
+  url: 'https://amzn.to/3WoUIAM',
+  category: 'fitness',  // ou 'fitness' se já tiver essa categoria
+  rating: '4.5/5'
+},
 ]
 
 
