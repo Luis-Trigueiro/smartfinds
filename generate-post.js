@@ -142,6 +142,15 @@ function fixAmazonUrlOrFallback(rawUrl, anchorText) {
     return buildSearchUrl(keyword);
   }
 }
+
+
+ const htmlFromMarkdown = marked(markdownContent).replace(
+    /<a\s+href="([^"]*amazon[^"]*)"[^>]*>(.*?)<\/a>/gi,
+    (_m, url, text) => {
+      const fixed = fixAmazonUrlOrFallback(url, text);
+      return `<a href="${fixed}" target="_blank" rel="nofollow sponsored noopener" class="buy-btn">🛒 Buy on Amazon.ie</a>`;
+    }
+  );
   // 🌐 Full HTML template
   const htmlContent = `
   <!DOCTYPE html>
