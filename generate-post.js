@@ -119,8 +119,8 @@ Keep the tone engaging, under 400 words, with a brief introduction.
       }
       .buy-btn {
         display: inline-block;
-        background: #0d3b66;
-        color: white;
+        background: #f9fafb;
+        color: #0d3b66;
         padding: 0.7rem 1.4rem;
         border-radius: 10px;
         text-decoration: none;
