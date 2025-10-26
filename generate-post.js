@@ -100,7 +100,7 @@ async function generatePost() {
         max-width: 900px;
         margin: auto;
       }
-      h1, h2, h3 { color: #f28c28; }
+      h1, h2, h3 { color: #f9fafb; }
       img.thumb {
         display: block;
         margin: 0 auto 2rem;
@@ -110,7 +110,7 @@ async function generatePost() {
       }
       .buy-btn {
         display: inline-block;
-        background: #f28c28;
+        background: #0d3b66;
         color: white;
         padding: 0.7rem 1.4rem;
         border-radius: 10px;
@@ -125,11 +125,11 @@ async function generatePost() {
       .back {
         display: inline-block;
         margin-bottom: 1rem;
-        color: #f28c28;
+        color: #f9fafb;
         text-decoration: none;
       }
       .back:hover { text-decoration: underline; }
-      a { color: #f28c28; text-decoration: none; }
+      a { color: #f9fafb; text-decoration: none; }
       a:hover { text-decoration: underline; }
     </style>
   </head>
@@ -151,7 +151,7 @@ async function generatePost() {
   if (fs.existsSync(blogIndexPath)) {
     const snippet = `
       <article class="post-card">
-        <img src="./posts/images/${imageFileName}" alt="${title}" class="thumb" />
+
         <h3>${title}</h3>
         <p>${description}</p>
         <a href="./posts/${htmlFileName}" class="btn">Read More</a>
