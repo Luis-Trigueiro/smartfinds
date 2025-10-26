@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "marked": "^16.4.1",
     "openai": "^6.7.0"
   }
 }
