@@ -56,7 +56,7 @@ async function generatePost() {
   const imageResponse = await client.images.generate({
     model: "gpt-image-1",
     prompt: imagePrompt,
-    size: "1024x512",
+    size: "1024x1536",
   });
 
   const imageBase64 = imageResponse.data[0].b64_json;
