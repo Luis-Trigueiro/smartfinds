@@ -8,33 +8,29 @@ const client = new OpenAI({
 });
 
 async function generatePost() {
-  console.log("🧠 Generating SmartFinds4You blog post with real Amazon.ie links...");
+  console.log("🧠 Generating SmartFinds4You post with thumbnail and SEO...");
 
   const today = new Date();
   const dateStr = today.toISOString().split("T")[0];
   const titleSlug = "smart-gadgets-daily-picks";
   const mdFileName = `${dateStr}-${titleSlug}.md`;
   const htmlFileName = `${dateStr}-${titleSlug}.html`;
+  const imageFileName = `${dateStr}-thumb.png`;
 
   const postsDir = path.join("blog", "posts");
+  const imgDir = path.join(postsDir, "images");
   if (!fs.existsSync(postsDir)) fs.mkdirSync(postsDir, { recursive: true });
+  if (!fs.existsSync(imgDir)) fs.mkdirSync(imgDir, { recursive: true });
 
-  // 🧠 Novo prompt para gerar conteúdo com produtos reais
+  // ✨ Prompt atualizado para links reais e markdown limpo
   const prompt = `
-  You are writing a blog post for a site called "SmartFinds4You".
-  Your goal: create a markdown article titled **"Smart Gadgets Worth Checking Out Today"**.
-
-  ✅ Requirements:
-  - Include 3–5 **real** tech or gadget products that exist on **Amazon.ie**.
-  - Each product must have a short fun description (2–3 sentences max).
-  - Include emojis, section headers, and markdown formatting.
-  - Use your own engaging style ("these are worth it", "perfect for gifting", etc.).
-  - Include an affiliate link in each product like this example:
-    https://www.amazon.ie/dp/<ASIN>?tag=smartfinds403-21&language=en_IE&linkCode=ll1&ref_=as_li_ss_tl
-  - Replace <ASIN> with real product IDs from Amazon.ie that match your description.
-  - Keep the total under 400 words.
-
-  Write only markdown. No HTML.
+  Write a blog post for "SmartFinds4You", an Amazon affiliate site.
+  Theme: "Top Smart Gadgets and Useful Amazon Finds".
+  Include 3–5 real products from Amazon.ie with fun, natural descriptions.
+  Each product must use this link format:
+  https://www.amazon.ie/dp/[ASIN]?crid=2LVFUQENY2V65&keywords=[keyword]&linkCode=ll1&tag=smartfinds403-21&linkId=99c260a4e41515f5f1c89b513de24f16&language=en_IE&ref_=as_li_ss_tl
+  Format the post in Markdown with emojis and clear titles.
+  Keep it under 400 words and include a friendly introduction.
   `;
 
   const completion = await client.chat.completions.create({
@@ -44,66 +40,135 @@ async function generatePost() {
 
   const markdownContent = completion.choices[0].message.content;
 
-  // --- Salvar o Markdown ---
-  const mdPath = path.join(postsDir, mdFileName);
-  fs.writeFileSync(mdPath, markdownContent);
-  console.log(`✅ Markdown saved: ${mdPath}`);
+  // 🎯 Extract title and description for SEO
+  const titleMatch = markdownContent.match(/^#\s*(.*)/m);
+  const title = titleMatch ? titleMatch[1].trim() : "SmartFinds Daily Picks";
+  const description =
+    markdownContent
+      .replace(/[#*_>\[\]()]/g, "")
+      .split("\n")
+      .slice(1, 4)
+      .join(" ")
+      .slice(0, 150) + "...";
 
-  // --- Converter Markdown em HTML ---
+  // 🎨 Attempt to generate thumbnail image (fallback if denied)
+  let imagePath = path.join(imgDir, imageFileName);
+  try {
+    console.log("🎨 Generating thumbnail with gpt-image-1...");
+    const imageResponse = await client.images.generate({
+      model: "gpt-image-1",
+      prompt: `A flat modern banner for "${title}", SmartFinds4You style, blue (#0d3b66) and orange (#f28c28), minimalist tech theme.`,
+      size: "1536x1024",
+    });
+    const base64 = imageResponse.data[0].b64_json;
+    fs.writeFileSync(imagePath, Buffer.from(base64, "base64"));
+    console.log("✅ Custom thumbnail generated.");
+  } catch (err) {
+    console.warn("⚠️ Image generation failed. Using default thumbnail.");
+    const defaultPath = path.join("assets", "default-thumb.png");
+    if (fs.existsSync(defaultPath)) {
+      fs.copyFileSync(defaultPath, imagePath);
+    }
+  }
+
+  // 🧱 Convert Markdown to HTML and style Amazon links
+  const htmlFromMarkdown = marked(markdownContent).replace(
+    /<a href="([^"]+amazon[^"]+)">([^<]+)<\/a>/g,
+    `<a href="$1" target="_blank" class="buy-btn">🛒 Buy on Amazon.ie</a>`
+  );
+
+  // 🌐 Full HTML template
   const htmlContent = `
   <!DOCTYPE html>
   <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SmartFinds4You — ${dateStr}</title>
+    <title>${title} | SmartFinds4You</title>
+    <meta name="description" content="${description}" />
+    <meta property="og:title" content="${title}" />
+    <meta property="og:description" content="${description}" />
+    <meta property="og:image" content="./images/${imageFileName}" />
     <link rel="stylesheet" href="../../styles.css" />
     <style>
-      body { font-family: 'Poppins', sans-serif; padding: 2rem; background:#f9fafb; color:#0d3b66; line-height:1.6; }
-      h1, h2, h3 { color:#f28c28; }
-      a { color:#0d3b66; font-weight:600; text-decoration:none; }
-      a:hover { text-decoration:underline; }
-      .back { display:inline-block; margin-bottom:1rem; color:#f28c28; }
+      body {
+        font-family: 'Inter', sans-serif;
+        background: #0d3b66;
+        color: #f9fafb;
+        padding: 2rem;
+        line-height: 1.7;
+        max-width: 900px;
+        margin: auto;
+      }
+      h1, h2, h3 { color: #f28c28; }
+      img.thumb {
+        display: block;
+        margin: 0 auto 2rem;
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        max-width: 100%;
+      }
+      .buy-btn {
+        display: inline-block;
+        background: #f28c28;
+        color: white;
+        padding: 0.7rem 1.4rem;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.3s ease;
+      }
+      .buy-btn:hover {
+        background: #f9fafb;
+        color: #0d3b66;
+      }
+      .back {
+        display: inline-block;
+        margin-bottom: 1rem;
+        color: #f28c28;
+        text-decoration: none;
+      }
+      .back:hover { text-decoration: underline; }
+      a { color: #f28c28; text-decoration: none; }
+      a:hover { text-decoration: underline; }
     </style>
   </head>
   <body>
     <a href="../index.html" class="back">← Back to Blog</a>
-    ${marked(markdownContent)}
+    <img src="./images/${imageFileName}" alt="${title}" class="thumb" />
+    ${htmlFromMarkdown}
   </body>
   </html>
   `;
 
-  const htmlPath = path.join(postsDir, htmlFileName);
-  fs.writeFileSync(htmlPath, htmlContent);
-  console.log(`✅ HTML post saved: ${htmlPath}`);
+  // 💾 Save files
+  fs.writeFileSync(path.join(postsDir, mdFileName), markdownContent);
+  fs.writeFileSync(path.join(postsDir, htmlFileName), htmlContent);
+  console.log(`✅ Post generated: ${htmlFileName}`);
 
-  // --- Atualizar o blog/index.html ---
+  // 📰 Add snippet to blog index
   const blogIndexPath = "blog/index.html";
   if (fs.existsSync(blogIndexPath)) {
-    const titleMatch = markdownContent.match(/^#\s*(.*)/m);
-    const title = titleMatch ? titleMatch[1] : "SmartFinds Daily Picks";
-    const summary = markdownContent.split("\n").slice(1, 5).join(" ").slice(0, 180) + "...";
-
     const snippet = `
-    <article class="post-card">
-      <h3>${title}</h3>
-      <p>${summary}</p>
-      <a href="./posts/${htmlFileName}" class="btn">Read more</a>
-    </article>
+      <article class="post-card">
+        <img src="./posts/images/${imageFileName}" alt="${title}" class="thumb" />
+        <h3>${title}</h3>
+        <p>${description}</p>
+        <a href="./posts/${htmlFileName}" class="btn">Read More</a>
+      </article>
     `;
-
     let indexHTML = fs.readFileSync(blogIndexPath, "utf8");
     if (indexHTML.includes("</main>")) {
       indexHTML = indexHTML.replace("</main>", `${snippet}\n</main>`);
       fs.writeFileSync(blogIndexPath, indexHTML);
-      console.log("📰 Blog index updated with new post snippet.");
+      console.log("📰 Blog index updated with new post.");
     }
   }
 
-  console.log("✨ Done! Post with Amazon.ie affiliate links created successfully.");
+  console.log("✨ Done! Post + SEO + Fallback Thumbnail ready.");
 }
 
 generatePost().catch((err) => {
-  console.error("❌ Error generating post:", err);
+  console.error("❌ Error:", err);
   process.exit(1);
 });
