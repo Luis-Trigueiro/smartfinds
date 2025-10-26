@@ -1,0 +1,35 @@
+name: Auto Generate Blog Post
+
+on:
+  schedule:
+    - cron: "0 9 * * *"  # runs every day at 9am UTC
+  workflow_dispatch:      # allows manual trigger
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install openai
+
+      - name: Generate new post
+        run: node generate-post.js
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+      - name: Commit and push new post
+        run: |
+          git config --local user.email "github-actions@smartfinds4you.com"
+          git config --local user.name "SmartFindsBot"
+          git add .
+          git commit -m "🧠 New auto blog post: $(date)"
+          git push
