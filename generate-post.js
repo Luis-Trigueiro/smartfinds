@@ -23,15 +23,18 @@ async function generatePost() {
   if (!fs.existsSync(imgDir)) fs.mkdirSync(imgDir, { recursive: true });
 
   // 🎯 Prompt atualizado para gerar conteúdo com links válidos
-  const prompt = `
-  Write a blog post for "SmartFinds4You", an Amazon affiliate site.
-  Theme: "Top Smart Gadgets and Useful Amazon Finds".
-  Include 3–5 real products available on Amazon.ie with short, engaging descriptions.
-  Each product must include a valid affiliate link in this format:
-  https://www.amazon.ie/dp/[ASIN]?tag=smartfinds403-21&language=en_IE&linkCode=ll1&ref_=as_li_ss_tl
-  Format everything in Markdown with sections, emojis, and bullet points.
-  Keep it under 400 words and start with a fun, friendly intro.
-  `;
+ const prompt = `
+Write a blog post for "SmartFinds4You", an Amazon affiliate site.
+Theme: "Top Smart Gadgets and Useful Amazon Finds".
+Include 3–5 real products available on Amazon.ie with short, engaging descriptions.
+Each product must include a valid affiliate link strictly in this format:
+https://www.amazon.ie/[product-name]/dp/[ASIN]?crid=XXXX&dib=YYYY&dib_tag=se&keywords=[keyword]&qid=XXXXXX&sprefix=[keyword]%2Caps%2C57&sr=8-1&linkCode=ll1&tag=smartfinds403-21&linkId=[random-string]&language=en_IE&ref_=as_li_ss_tl
+
+Make sure each product link follows that format and uses realistic-looking parameters.
+Format everything in Markdown with sections, emojis, and bullet points.
+Keep it under 400 words and start with a fun, friendly intro.
+`;
+
 
   const completion = await client.chat.completions.create({
     model: "gpt-4o-mini",
