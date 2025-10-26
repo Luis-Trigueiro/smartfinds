@@ -15,7 +15,7 @@ async function generatePost() {
   const titleSlug = "smart-gadgets-daily-picks";
   const mdFileName = `${dateStr}-${titleSlug}.md`;
   const htmlFileName = `${dateStr}-${titleSlug}.html`;
-  const imageFileName = `${dateStr}-thumb.png`;
+ // const imageFileName = `${dateStr}-thumb.png`;
 
   const postsDir = path.join("blog", "posts");
   const imgDir = path.join(postsDir, "images");
@@ -54,7 +54,7 @@ Keep it under 400 words and start with a fun, friendly intro.
     .slice(0, 150) + "...";
 
   // 🧠 Gerar imagem de capa (thumbnail)
-  console.log("🎨 Generating thumbnail image...");
+ /*  console.log("🎨 Generating thumbnail image...");
   const imagePrompt = `A minimal and modern banner image for a blog post titled "${title}", using brand colors #0d3b66 (blue) and #f28c28 (orange), flat design style, white background, tech/gadgets theme, clean typography.`;
   const imageResponse = await client.images.generate({
     model: "gpt-image-1",
@@ -67,7 +67,18 @@ Keep it under 400 words and start with a fun, friendly intro.
     path.join(imgDir, imageFileName),
     Buffer.from(imageBase64, "base64")
   );
-  console.log("✅ Thumbnail saved:", imageFileName);
+  console.log("✅ Thumbnail saved:", imageFileName); */
+
+  // 🧠 Use fallback image if image generation not available
+console.log("⚙️ Skipping AI image generation (using default banner).");
+const imageFileName = "default-thumb.png";
+const defaultImagePath = path.join(imgDir, imageFileName);
+
+// Copiar uma imagem padrão (você pode colocar qualquer banner lá)
+if (!fs.existsSync(defaultImagePath)) {
+  fs.copyFileSync("assets/default-thumb.png", defaultImagePath);
+}
+
 
   // 🧱 Adicionar botão estilizado nos links de compra
   const htmlFromMarkdown = marked(markdownContent).replace(
