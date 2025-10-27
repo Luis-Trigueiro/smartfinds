@@ -103,6 +103,60 @@ const FITNESS = [
 },
 ]
 
+const HOME = [
+  {
+    id: 'h1',
+    asin: 'B099NQM99M',
+    title: 'Philips Hue Smart Bulb White & Color Ambiance',
+    desc: 'Control your home lighting with voice or app — 16 million colors and dimming options to set the perfect mood.',
+    img: 'https://m.media-amazon.com/images/I/71A9nTHrYjL._AC_SL1500_.jpg',
+    url: 'https://amzn.to/43BWmms',
+    category: 'home',
+    rating: '4.7/5'
+  },
+  {
+    id: 'h2',
+    asin: 'B0B8QZB93K',
+    title: 'Levoit Core 300 Air Purifier',
+    desc: 'Breathe cleaner air with HEPA filtration — perfect for bedrooms, removing dust, smoke, and allergens quietly.',
+    img: 'https://m.media-amazon.com/images/I/71t-9BTIg9L._AC_SL1500_.jpg',
+    url: 'https://amzn.to/3WqsEgy',
+    category: 'home',
+    rating: '4.8/5'
+  },
+  {
+    id: 'h3',
+    asin: 'B07CNCNYG9',
+    title: 'Joseph Joseph Nest 9 Plus Food Storage Set',
+    desc: 'Stackable, colorful food containers that save space in your kitchen — BPA-free and microwave safe.',
+    img: 'https://m.media-amazon.com/images/I/81AVt+R-ZdL._AC_SL1500_.jpg',
+    url: 'https://amzn.to/4oaiAEt',
+    category: 'home',
+    rating: '4.6/5'
+  },
+  {
+    id: 'h4',
+    asin: 'B0928WBZVM',
+    title: 'Amazon Basics Rectangular Recycling Rubbish Bin with 2 Compartments, 60 Litres, Silver',
+    desc: 'Amazon Basics offers everyday items for your home, office, garden and more. With a selection that continues to grow, the Amazon Basics brand is set to become a part of your daily convenience for electronics products and lifestyle.',
+    img: 'https://m.media-amazon.com/images/I/71tDtDSZOtL._SL1500_.jpg',
+    url: 'https://amzn.to/4qsT9j9',
+    category: 'home',
+    rating: '4.8/5'
+  },
+  {
+    id: 'h5',
+    asin: 'B0DT9RGKC2',
+    title: 'Tefal Easy Fry Dual Zone Digital Air Fryer',
+    desc: 'Tefal Easy Fry Dual Zone Digital Air Fryer, 2 Drawers, 8.3L, 8in1, Air Fry, Extra Crisp, Roast, Bake, Reheat, Dehydrate, 6 Portions, Non-Stick, Dishwasher Safe Baskets, Grey EY901HG0',
+    img: 'https://m.media-amazon.com/images/I/715EdCgIhxL._AC_SL1500_.jpg',
+    url: 'https://amzn.to/3L9eYEk',
+    category: 'home',
+    rating: '4.7/5'
+  }
+];
+
+
 
 
 const PRODUCTS = [
@@ -159,7 +213,7 @@ const PRODUCTS = [
     category: 'books',
     img: 'assets/demo-deepwork.jpg',
     url: 'https://amzn.to/43D0FOp'
-  }, ...BOOKS, ...TECH,...FITNESS
+  }, ...BOOKS, ...TECH,...FITNESS,...HOME
 ];
 
 
