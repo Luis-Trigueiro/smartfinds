@@ -82,25 +82,39 @@ const TECH = [
 
 const FITNESS = [
   {
-  id: 's1',
-  asin: 'B00QWUZJ5I',
-  title: 'Wilson Staff Squash Balls – Pack of 2 (Blue)',
-  desc: 'High-performance squash balls for experienced players. Designed for speed and durability on court.',
-  img: 'https://m.media-amazon.com/images/I/819m845i7OL._AC_SL1500_.jpg',  // verifique se essa URL funciona; ajuste se necessário
-  url: 'https://amzn.to/4o4CmBb',
-  category: 'fitness',  // ou 'fitness' se já tiver essa categoria
-  rating: '4.5/5'
-},
+    id: 's1',
+    asin: 'B00QWUZJ5I',
+    title: 'Wilson Staff Squash Balls – Pack of 2 (Blue)',
+    desc: 'High-performance squash balls for experienced players. Designed for speed and durability on court.',
+    img: 'https://m.media-amazon.com/images/I/819m845i7OL._AC_SL1500_.jpg',  // verifique se essa URL funciona; ajuste se necessário
+    url: 'https://amzn.to/4o4CmBb',
+    category: 'fitness',  // ou 'fitness' se já tiver essa categoria
+    rating: '4.5/5'
+  },
   {
-  id: 's2',
-  asin: 'B07XJ16ZH3',
-  title: 'Wilson Triniti Tennis Balls – Pack of 3 (Yellow)',
-  desc: 'Premium tennis balls for all court surfaces. Consistent bounce and durability for competitive play.',
-  img: 'https://m.media-amazon.com/images/I/31rJGXPebDL._AC_SL1002_.jpg',  // verifique se essa URL funciona; ajuste se necessário
-  url: 'https://amzn.to/3WoUIAM',
-  category: 'fitness',  // ou 'fitness' se já tiver essa categoria
-  rating: '4.5/5'
-},
+    id: 's2',
+    asin: 'B07XJ16ZH3',
+    title: 'Wilson Triniti Tennis Balls – Pack of 3 (Yellow)',
+    desc: 'Premium tennis balls for all court surfaces. Consistent bounce and durability for competitive play.',
+    img: 'https://m.media-amazon.com/images/I/31rJGXPebDL._AC_SL1002_.jpg',  // verifique se essa URL funciona; ajuste se necessário
+    url: 'https://amzn.to/3WoUIAM',
+    category: 'fitness',  // ou 'fitness' se já tiver essa categoria
+    rating: '4.5/5'
+  }, 
+  {
+    id: 's3',
+    asin: 'B0BWGK67NZ',
+    title: 'Dunlop Squash Racket SONIC LITE TI Grey/Blue',
+    desc: `The Lite TI is a perfect racket for you if you're a beginner or recreational player. It's the perfect companion to your first on-court steps. Welcome to the Court.`,
+    img: 'https://m.media-amazon.com/images/I/51dYPeOKNwL._AC_SL1500_.jpg',  // verifique se essa URL funciona; ajuste se necessário
+    url: 'https://amzn.to/47QSnoI',
+    category: 'fitness',  // ou 'fitness' se já tiver essa categoria
+    rating: '4.6/5'
+  },
+
+
+
+
 ]
 
 const HOME = [
@@ -213,7 +227,7 @@ const PRODUCTS = [
     category: 'books',
     img: 'assets/demo-deepwork.jpg',
     url: 'https://amzn.to/43D0FOp'
-  }, ...BOOKS, ...TECH,...FITNESS,...HOME
+  }, ...BOOKS, ...TECH, ...FITNESS, ...HOME
 ];
 
 
