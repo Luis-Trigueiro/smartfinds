@@ -52,7 +52,21 @@ const BOOKS = [
     url: 'https://amzn.to/3WZMT4E',
     category: 'books',
     rating: '4.7/5'
+  },
+  {
+    id: 'b6',
+    asin: '0718183533', // The Ladybird Book of the Mid-Life Crisis
+    title: 'The Ladybird Book of the Mid-Life Crisis: (Ladybirds for Grown-Ups)',
+    desc: 'This delightful book is the latest in the series of Ladybird books which have been specially planned to help grown-ups with the world about them.',
+    img: 'https://m.media-amazon.com/images/I/81V2rGRfsiL._SL1500_.jpg',
+    url: 'https://amzn.to/43Htt8r',
+    category: 'books',
+    rating: '4.6/5'
   }
+
+
+
+
 ];
 
 
@@ -100,7 +114,7 @@ const FITNESS = [
     url: 'https://amzn.to/3WoUIAM',
     category: 'fitness',  // ou 'fitness' se já tiver essa categoria
     rating: '4.5/5'
-  }, 
+  },
   {
     id: 's3',
     asin: 'B0BWGK67NZ',
