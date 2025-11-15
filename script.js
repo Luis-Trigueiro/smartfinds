@@ -62,11 +62,47 @@ const BOOKS = [
     url: 'https://amzn.to/43Htt8r',
     category: 'books',
     rating: '4.6/5'
+  },
+  {
+    id: 'b7',
+    asin: ' B0FFWHVYPW', // The Ladybird Book of the Mid-Life Crisis
+    title: 'Last Samurai Standing 1',
+    desc: 'Last Samurai Standing 1',
+    img: 'https://m.media-amazon.com/images/I/81KdvFxHkaL._SY425_.jpg',
+    url: 'https://amzn.to/48hEVKM',
+    category: 'books',
+    rating: '5/5'
+  },
+  {
+    id: 'b8',
+    asin: ' B0FPGS8K6Z', // The Ladybird Book of the Mid-Life Crisis
+    title: 'Last Samurai Standing 2',
+    desc: 'Last Samurai Standing 2',
+    img: 'https://m.media-amazon.com/images/I/91FEaHMKDIL._SL1500_.jpg',
+    url: 'https://amzn.to/4nY4kOi',
+    category: 'books',
+    rating: '5/5'
+  },
+  {
+    id: 'b9',
+    asin: ' B0DWWXT51N', // The Ladybird Book of the Mid-Life Crisis
+    title: 'Last Samurai Standing 3',
+    desc: 'Last Samurai Standing 3',
+    img: 'https://m.media-amazon.com/images/I/91yXtEUlfDL._SY425_.jpg',
+    url: 'https://amzn.to/4i4bf79',
+    category: 'books',
+    rating: '5/5'
+  },
+  {
+    id: 'b10',
+    asin: ' B0F4QBJNGD', // The Ladybird Book of the Mid-Life Crisis
+    title: 'Last Samurai Standing 4',
+    desc: 'Last Samurai Standing 4',
+    img: 'https://m.media-amazon.com/images/I/911MrEVqTvL._SY425_.jpg',
+    url: 'https://amzn.to/47FYI6s',
+    category: 'books',
+    rating: '5/5'
   }
-
-
-
-
 ];
 
 
@@ -125,9 +161,18 @@ const FITNESS = [
     category: 'fitness',  // ou 'fitness' se já tiver essa categoria
     rating: '4.6/5'
   },
-
-
-
+  {
+    id: 's4',
+    asin: 'B0CHVDYS1P',
+    title: 'Pregnancy Seat Belt,Bump Strap,Protects Unborn Baby,Maternity Belt for Car',
+    desc: `A Must Have Bump Belt for Expectant Mothers Anti-extrusion Belt for Pregnant Women's Belly Comfortable Driving for Expectant Mothers - Protects the Unborn Baby.
+    It is easy to install and does not require extra time to unfasten and retie, making it more practical for daily use.
+    For anyone who has had abdominal or stomach surgery,a C-section can help reduce discomfort and pain safely.`,
+    img: 'https://m.media-amazon.com/images/I/61EYpoIYuIL._AC_SX425_.jpg',  // verifique se essa URL funciona; ajuste se necessário
+    url: 'https://amzn.to/3LF22WU',
+    category: 'fitness',  // ou 'fitness' se já tiver essa categoria
+    rating: '4.5/5'
+  },
 
 ]
 
