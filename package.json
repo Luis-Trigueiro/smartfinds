@@ -1,11 +1,12 @@
 {
-  "scripts": {
-    "generate-feed": "node generate-feed.js"
-  },
+  "type": "module",
   "dependencies": {
     "dotenv": "^17.2.3",
     "marked": "^16.4.2",
     "openai": "^6.9.0"
   },
-  "type": "module"
+  "scripts": {
+    "generate-post": "node generate-post.js",
+    "generate-feed": "node generate-feed.js"
+  }
 }

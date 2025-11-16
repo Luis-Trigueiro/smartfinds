@@ -1,13 +1,13 @@
 import fs from "fs";
 import path from "path";
 
-// Caminho da pasta do blog
-const blogDir = path.join(process.cwd(), "blog");
+// pasta onde ficam os posts HTML
+const postsDir = path.join("blog", "posts");
 
-// Caminho do feed
-const feedPath = path.join(blogDir, "feed.xml");
+// caminho do feed
+const feedPath = path.join("blog", "feed.xml");
 
-// Função para gerar um item do RSS
+// gera um <item> do RSS
 function generateItem({ title, link, description, date }) {
   return `
     <item>
@@ -20,12 +20,13 @@ function generateItem({ title, link, description, date }) {
   `;
 }
 
-// Função para extrair dados de um post HTML
+// extrai dados de um post HTML
 function parsePost(fileName) {
-  const filePath = path.join(blogDir, fileName);
+  const filePath = path.join(postsDir, fileName);
   const html = fs.readFileSync(filePath, "utf8");
 
-  const url = `https://www.smartfinds4you.com/blog/${fileName}`;
+  // URL pública do post
+  const link = `https://www.smartfinds4you.com/blog/posts/${fileName}`;
 
   const title =
     html.match(/<h1.*?>(.*?)<\/h1>/)?.[1] ||
@@ -40,22 +41,25 @@ function parsePost(fileName) {
 
   return {
     title,
-    link: url,
+    link,
     description,
     date: stats.mtime,
   };
 }
 
-// Lê todos os arquivos HTML da pasta /blog
+// pega só os .html (ignora .md e pasta images)
 const posts = fs
-  .readdirSync(blogDir)
-  .filter((file) => file.endsWith(".html"))
-  .map((file) => parsePost(file));
+  .readdirSync(postsDir)
+  .filter(
+    (file) =>
+      file.endsWith(".html") &&
+      file !== "index.html" &&
+      file !== "images"
+  )
+  .map((file) => parsePost(file))
+  .sort((a, b) => new Date(b.date) - new Date(a.date)); // mais novo primeiro
 
-// Ordena por data (mais recente primeiro)
-posts.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-// Gera o feed RSS completo
+// monta o RSS inteiro
 const feed = `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0">
   <channel>
@@ -64,13 +68,10 @@ const feed = `<?xml version="1.0" encoding="UTF-8" ?>
     <description>Latest Amazon finds, reviews and product discoveries.</description>
     <language>en-us</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
-
     ${posts.map(generateItem).join("\n")}
   </channel>
 </rss>
 `;
 
-// Salva o feed.xml
 fs.writeFileSync(feedPath, feed);
-
-console.log("✅ feed.xml atualizado com sucesso!");
+console.log("✅ feed.xml atualizado em blog/feed.xml");
