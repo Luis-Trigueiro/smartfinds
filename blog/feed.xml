@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>SmartFinds4You Blog</title>
+    <link>https://www.smartfinds4you.com/blog/</link>
+    <description>Latest Amazon finds, reviews and product discoveries.</description>
+    <language>en-us</language>
+    <lastBuildDate>{{TIMESTAMP}}</lastBuildDate>
+
+    <!-- AUTOMATICALLY INSERT POSTS HERE -->
+    <!-- Each post should be added as an <item> block -->
+
+    <!-- Example format (you will generate these automatically later): -->
+    <!--
+    <item>
+      <title>Sample Blog Post</title>
+      <link>https://www.smartfinds4you.com/blog/sample-post.html</link>
+      <description><![CDATA[A short excerpt from the post...]]></description>
+      <pubDate>Tue, 19 Nov 2024 10:00:00 +0000</pubDate>
+      <guid>https://www.smartfinds4you.com/blog/sample-post.html</guid>
+    </item>
+    -->
+  </channel>
+</rss>
