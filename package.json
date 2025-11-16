@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "generate-feed": "node generate-feed.js"
+  },
   "dependencies": {
     "dotenv": "^17.2.3",
     "marked": "^16.4.2",
