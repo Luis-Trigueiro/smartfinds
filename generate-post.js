@@ -15,7 +15,8 @@ const topics = [
   "Smart Gadgets and Useful Amazon Finds",
   "Fitness & Wellness",
   "Home Essentials",
-  "Manga"
+  "Manga",
+  "Beauty & Personal Care"
 ];
 
 const topicIndexFile = "blog/last-topic.txt";
@@ -68,7 +69,7 @@ tag=smartfinds403-21&language=en_IE&linkCode=ll1&ref_=as_li_ss_tl
 
 Format in Markdown with headings, emojis, and short engaging paragraphs.
 Keep it under 400 words and include a short friendly intro related to "${currentTopic}".
-Make sure the products come from different subcategories (e.g., books, tech, fitness, home essentials, manga).
+Make sure the products come from different subcategories (e.g., books, tech, fitness, home essentials, manga,Beauty & Personal Care).
 Avoid repeating similar items or brands.
 `;
 

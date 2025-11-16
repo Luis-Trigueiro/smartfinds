@@ -105,6 +105,40 @@ const BOOKS = [
   }
 ];
 
+const BEAUTY = [
+  {
+    id: 'b1',
+    asin: '‎B08XC54CW5',
+    title: 'CeraVe Hydrating Hyaluronic Acid Serum',
+    desc: 'NEW CeraVe Hydrating Hyaluronic Acid Serum is a lightweight serum that provides 24 hour hydration and moisture to the skin.',
+    img: 'https://m.media-amazon.com/images/I/616Sd5+yYrL._AC_SL1200_.jpg',
+    url: 'https://amzn.to/485cRJq',
+    category: 'beauty',
+    rating: '4.7/5'
+  },
+  {
+    id: 'b2',
+    asin: 'B011EE9ONO',
+    title: 'HAIR LIGHTENING LOTION',
+    desc: 'Brightens hair and restores natural blonde tone',
+    img: 'https://m.media-amazon.com/images/I/71CIT6d5r0L._AC_SL1500_.jpg',
+    url: 'https://amzn.to/4oTeKzZ',
+    category: 'beauty',
+    rating: '4.6/5'
+  },
+  {
+    id: 'b3',
+    asin: '‎B0051PQY72',
+    title: `Camomila Intea Children's Shampoo Blonde Highlights 250 ml`,
+    desc: 'Shampoos specially designed for the care and washing of blonde hair, whether natural, dyed or lightened with our products. ',
+    img: 'https://m.media-amazon.com/images/I/61a1Emaa9vL._AC_SL1500_.jpg',
+    url: 'https://amzn.to/3K677Hd',
+    category: 'beauty',
+    rating: '4.8/5'
+  }
+];
+
+
 
 // === TECH & GADGETS COLLECTION ===
 const TECH = [
@@ -286,7 +320,7 @@ const PRODUCTS = [
     category: 'books',
     img: 'assets/demo-deepwork.jpg',
     url: 'https://amzn.to/43D0FOp'
-  }, ...BOOKS, ...TECH, ...FITNESS, ...HOME
+  }, ...BOOKS, ...TECH, ...FITNESS, ...HOME, ...BEAUTY
 ];
 
 
@@ -320,7 +354,8 @@ function categoryLabel(key) {
     tech: 'Tech & Gadgets',
     home: 'Home Essentials',
     fitness: 'Fitness & Wellness',
-    books: 'Books & Learning'
+    books: 'Books & Learning',
+    beauty: 'Beauty & Personal Care'
   }[key] || key;
 }
 
